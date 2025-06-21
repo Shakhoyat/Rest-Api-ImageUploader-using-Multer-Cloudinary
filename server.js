@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
+import path from "path";
 
 const app = express();
 const PORT = 3000;
@@ -29,15 +30,22 @@ app.get("/", (req, res) => {
   res.render("index.ejs", { url: null });
 });
 
+/**
+ * Configures Multer storage to save uploaded files to the local filesystem.
+ * Files are stored in the './public/uploads' directory with a unique filename
+ * consisting of the field name, the current timestamp, and the original file extension.
+ */
 const storage = multer.diskStorage({
   destination: "./public/uploads",
   filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix);
+    const uniqueSuffix = Date.now() + path.extname(file.originalname);
+    cb(null, file.fieldname + uniqueSuffix);
   },
 });
 
 const upload = multer({ storage: storage });
+
+// Handles POST requests to '/profile' endpoint, processes a single file upload with the field name 'avatar'
 app.post("/profile", upload.single("avatar"), function (req, res) {});
 
 app.listen(PORT, () => {
