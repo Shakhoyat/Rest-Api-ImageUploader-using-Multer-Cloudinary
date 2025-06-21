@@ -46,17 +46,13 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Handles POST requests to '/profile' endpoint, processes a single file upload with the field name 'avatar'
-app.post("/upload", upload.single("file"), function (req, res) {
+app.post("/upload", upload.single("file"), async (req, res) => {
   const file = req.file.path;
-  // Upload the file to Cloudinary
-  cloudinary.uploader.upload(file, (error, result) => {
-    if (error) {
-      console.error("Cloudinary upload error:", error);
-      return res.status(500).send("Error uploading file to Cloudinary");
-    }
-    // Send the URL of the uploaded file back to the client
-    res.render("index.ejs", { url: result.secure_url });
+  const cloudinaryResponse = await cloudinary.uploader.upload(file, {
+    folder: "Nodejs101",
   });
+  res.json({ message: "File uploaded successfully", cloudinaryResponse });
+  // Upload the file to Cloudinary
 });
 
 app.listen(PORT, () => {
