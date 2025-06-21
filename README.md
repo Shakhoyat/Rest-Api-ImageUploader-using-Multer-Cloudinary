@@ -38,6 +38,7 @@ Perfect for learning file uploads, cloud storage, and API design.
 - **Async/Await:** Managing async uploads with error handling.
 - **Environment Variables:** Securing API keys with `.env`.
 - **Testing:** Debugging endpoints with Postman.
+- **Implemented environment variables** to securely manage and hide sensitive data (such as API keys and secrets) in the backend for the first time, following best practices
 
 ---
 
