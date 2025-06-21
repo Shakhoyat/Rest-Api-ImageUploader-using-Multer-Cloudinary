@@ -19,7 +19,7 @@ mongoose
 
 //rendering ejs template
 app.get("/", (req, res) => {
-  res.render("index.ejs", { title: "Home Page" });
+  res.render("index.ejs", { url: null });
 });
 
 app.listen(PORT, () => {
