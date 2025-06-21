@@ -3,23 +3,22 @@ import mongoose from "mongoose";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import path from "path";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-//configure multer for file uploads
+// Configure Cloudinary
 cloudinary.config({
-  cloud_name: "dbnvwi17e",
-  api_key: "493372257182395",
-  api_secret: "8ceUyApY0Wzs9XuRO_1gr1bMUI4",
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-//connect to MongoDB
+// Connect to MongoDB using .env variables
 mongoose
-  .connect(
-    "mongodb+srv://shakoyatsujon:3W8IdD5g6kON8AJW@cluster0.0p8evwy.mongodb.net/",
-    { dbName: "Nodejs101db" }
-  )
+  .connect(process.env.MONGODB_URI, { dbName: process.env.MONGODB_DBNAME })
   .then(() => {
     console.log("Connected to MongoDB successfully");
   })
@@ -27,18 +26,13 @@ mongoose
     console.error("Failed to connect to MongoDB", err);
   });
 
-//rendering ejs template
+// Rendering ejs template
 app.get("/", (req, res) => {
   res.render("index.ejs", { url: null });
 });
 
-/**
- * Configures Multer storage to save uploaded files to the local filesystem.
- * Files are stored in the './public/uploads' directory with a unique filename
- * consisting of the field name, the current timestamp, and the original file extension.
- */
+// Multer storage config
 const storage = multer.diskStorage({
-  //   destination: "./public/uploads",
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + path.extname(file.originalname);
     cb(null, file.fieldname + "-" + uniqueSuffix);
@@ -46,24 +40,22 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// Define a Mongoose schema and model for storing file information in MongoDB
+// Mongoose schema/model
 const imageSchema = new mongoose.Schema({
   filename: String,
   public_id: String,
   imgUrl: String,
 });
 const File = mongoose.model("cloudinary", imageSchema);
-// Handles POST requests to '/profile' endpoint, processes a single file upload with the field name 'avatar'
+
+// Upload endpoint
 app.post("/upload", upload.single("file"), async (req, res) => {
   const file = req.file.path;
-  // Upload the file to Cloudinary
   const cloudinaryResponse = await cloudinary.uploader.upload(file, {
     folder: "Nodejs101",
   });
-  //   res.json({ message: "File uploaded successfully", cloudinaryResponse });
-  // Save the file information to MongoDB
-  const db = await File.create({
-    filename: file.originalname,
+  await File.create({
+    filename: req.file.originalname,
     public_id: cloudinaryResponse.public_id,
     imgUrl: cloudinaryResponse.secure_url,
   });
