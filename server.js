@@ -46,7 +46,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Handles POST requests to '/profile' endpoint, processes a single file upload with the field name 'avatar'
-app.post("/profile", upload.single("avatar"), function (req, res) {});
+app.post("/upload", upload.single("avatar"), function (req, res) {});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
