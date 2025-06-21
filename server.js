@@ -39,14 +39,25 @@ const storage = multer.diskStorage({
   destination: "./public/uploads",
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + path.extname(file.originalname);
-    cb(null, file.fieldname + uniqueSuffix);
+    cb(null, file.fieldname + "-" + uniqueSuffix);
   },
 });
 
 const upload = multer({ storage: storage });
 
 // Handles POST requests to '/profile' endpoint, processes a single file upload with the field name 'avatar'
-app.post("/upload", upload.single("avatar"), function (req, res) {});
+app.post("/upload", upload.single("file"), function (req, res) {
+  const file = req.file.path;
+  // Upload the file to Cloudinary
+  cloudinary.uploader.upload(file, (error, result) => {
+    if (error) {
+      console.error("Cloudinary upload error:", error);
+      return res.status(500).send("Error uploading file to Cloudinary");
+    }
+    // Send the URL of the uploaded file back to the client
+    res.render("index.ejs", { url: result.secure_url });
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
