@@ -17,9 +17,9 @@ mongoose
     console.error("Failed to connect to MongoDB", err);
   });
 
-//route to handle GET requests
+//rendering ejs template
 app.get("/", (req, res) => {
-  res.send("Hello, World!");
+  res.render("index.ejs", { title: "Home Page" });
 });
 
 app.listen(PORT, () => {
