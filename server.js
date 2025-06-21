@@ -45,6 +45,12 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+const imageSchema = new mongoose.Schema({
+  filename: String,
+  public_id: String,
+  imgUrl: String,
+});
+const File = mongoose.model("cloudinary", imageSchema);
 // Handles POST requests to '/profile' endpoint, processes a single file upload with the field name 'avatar'
 app.post("/upload", upload.single("file"), async (req, res) => {
   const file = req.file.path;
