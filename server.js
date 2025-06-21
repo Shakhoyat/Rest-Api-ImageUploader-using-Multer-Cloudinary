@@ -6,12 +6,14 @@ import path from "path";
 
 const app = express();
 const PORT = 3000;
+
 //configure multer for file uploads
 cloudinary.config({
   cloud_name: "dbnvwi17e",
   api_key: "493372257182395",
   api_secret: "8ceUyApY0Wzs9XuRO_1gr1bMUI4",
 });
+
 //connect to MongoDB
 mongoose
   .connect(
@@ -42,9 +44,9 @@ const storage = multer.diskStorage({
     cb(null, file.fieldname + "-" + uniqueSuffix);
   },
 });
-
 const upload = multer({ storage: storage });
 
+// Define a Mongoose schema and model for storing file information in MongoDB
 const imageSchema = new mongoose.Schema({
   filename: String,
   public_id: String,
@@ -54,11 +56,17 @@ const File = mongoose.model("cloudinary", imageSchema);
 // Handles POST requests to '/profile' endpoint, processes a single file upload with the field name 'avatar'
 app.post("/upload", upload.single("file"), async (req, res) => {
   const file = req.file.path;
+  // Upload the file to Cloudinary
   const cloudinaryResponse = await cloudinary.uploader.upload(file, {
     folder: "Nodejs101",
   });
   res.json({ message: "File uploaded successfully", cloudinaryResponse });
-  // Upload the file to Cloudinary
+  // Save the file information to MongoDB
+  const db = await File.create({
+    filename: file.originalname,
+    public_id: cloudinaryResponse.public_id,
+    imgUrl: cloudinaryResponse.secure_url,
+  });
 });
 
 app.listen(PORT, () => {
