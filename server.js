@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
  * consisting of the field name, the current timestamp, and the original file extension.
  */
 const storage = multer.diskStorage({
-  destination: "./public/uploads",
+  //   destination: "./public/uploads",
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + path.extname(file.originalname);
     cb(null, file.fieldname + "-" + uniqueSuffix);
