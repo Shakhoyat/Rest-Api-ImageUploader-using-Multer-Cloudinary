@@ -60,13 +60,14 @@ app.post("/upload", upload.single("file"), async (req, res) => {
   const cloudinaryResponse = await cloudinary.uploader.upload(file, {
     folder: "Nodejs101",
   });
-  res.json({ message: "File uploaded successfully", cloudinaryResponse });
+  //   res.json({ message: "File uploaded successfully", cloudinaryResponse });
   // Save the file information to MongoDB
   const db = await File.create({
     filename: file.originalname,
     public_id: cloudinaryResponse.public_id,
     imgUrl: cloudinaryResponse.secure_url,
   });
+  res.render("index.ejs", { url: cloudinaryResponse.secure_url });
 });
 
 app.listen(PORT, () => {
