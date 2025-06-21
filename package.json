@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Shakhoyat/Rest-Api-ImageUploader-using-Multer-Cloudinary#readme",
   "dependencies": {
+    "cloudinary": "^2.7.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "mongoose": "^8.16.0",
